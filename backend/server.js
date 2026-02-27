@@ -1,19 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-const employees = require("../data/employees.json");
+const { createClient } = require("@supabase/supabase-js");
 
 app.use(express.json());
+app.set("trust proxy", true);
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY,
+);
 
 app.post("/checkin", async (req, res) => {
-  const { mac } = req.body;
-  console.log(mac);
-  // 1. Check if MAC is registered
-  if (!employees[mac]) {
-    return res.status(404).json({ message: "MAC address not found" });
-  }
-  // 2. Save check-in time
-  // 3. Compare with 8:00 AM
-  // 4. Return status
+  const ip = req.ip;
+  console.log("User IP:", ip);
 
   res.json({ message: "Check-in successful!" });
 });
