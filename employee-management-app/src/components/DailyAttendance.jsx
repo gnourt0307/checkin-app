@@ -102,6 +102,37 @@ export default function DailyAttendance() {
       >
         <h2 className="card-title">{t("dailyAttendance")}</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <button
+            onClick={fetchDailyAttendance}
+            disabled={loading}
+            style={{
+              padding: "0.4rem 0.6rem",
+              borderRadius: "4px",
+              border: "1px solid var(--border)",
+              background: "var(--surface)",
+              color: "var(--text-main)",
+              cursor: loading ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: loading ? 0.7 : 1,
+            }}
+            title="Reload"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
           <label style={{ margin: 0 }}>{t("selectDate")}:</label>
           <input
             type="date"

@@ -39,10 +39,10 @@ function Dashboard() {
             {t("employees")}
           </li>
           <li
-            className={activeTab === "insert" ? "active" : ""}
-            onClick={() => setActiveTab("insert")}
+            className={activeTab === "attendance" ? "active" : ""}
+            onClick={() => setActiveTab("attendance")}
           >
-            {t("insertData")}
+            {t("dailyAttendance")}
           </li>
           <li
             className={activeTab === "schedule" ? "active" : ""}
@@ -51,10 +51,10 @@ function Dashboard() {
             {t("workSchedule")}
           </li>
           <li
-            className={activeTab === "attendance" ? "active" : ""}
-            onClick={() => setActiveTab("attendance")}
+            className={activeTab === "insert" ? "active" : ""}
+            onClick={() => setActiveTab("insert")}
           >
-            {t("dailyAttendance")}
+            {t("insertData")}
           </li>
         </ul>
         <div className="language-toggle">

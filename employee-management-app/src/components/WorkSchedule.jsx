@@ -8,12 +8,14 @@ export default function WorkSchedule() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
+  const today = new Date().toISOString().split("T")[0];
+
   const [formData, setFormData] = useState({
     work_day: "in_week",
     work_start_time: "08:00:00",
-    work_end_time: "17:00:00",
-    late_threshold_minutes: 15,
-    effective_from: "",
+    work_end_time: "17:30:00",
+    late_threshold_minutes: 10,
+    effective_from: today,
     effective_to: "",
   });
 
