@@ -7,7 +7,8 @@
     "dev": "concurrently \"vite\" \"cross-env NODE_ENV=development electron .\"",
     "build": "vite build",
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:electron": "npm run build && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -25,5 +26,22 @@
   },
   "dependencies": {
     "dayjs": "^1.11.19"
+  },
+  "build": {
+    "appId": "com.company.checkin",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js"
+    ],
+    "mac": {
+      "category": "public.app-category.business"
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }

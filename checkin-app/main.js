@@ -13,7 +13,10 @@ function createWindow() {
 
   // win.webContents.openDevTools();
 
-  win.loadFile(path.join(__dirname, "dist", "index.html"));
+  // Load the index.html from dist folder appropriately
+  win.loadFile(path.join(__dirname, "dist", "index.html")).catch((err) => {
+    console.error("Failed to load index.html:", err);
+  });
 }
 
 app.whenReady().then(() => {
