@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import Clock from "./utilsComponent/Clock";
-import dayjs from "dayjs";
 import compareWithNow from "./utils/compareWithNow";
 
 function App() {
