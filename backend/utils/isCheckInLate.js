@@ -10,10 +10,15 @@ dayjs.extend(utc);
 function isCheckInLate(workTime) {
   const now = dayjs().tz("Asia/Ho_Chi_Minh");
 
-  const target = dayjs(
-    now.format("YYYY-MM-DD") + " " + workTime,
+  // Create target time string: "YYYY-MM-DD HH:mm:ss"
+  const targetTimeStr = `${now.format("YYYY-MM-DD")} ${workTime}`;
+
+  // Parse in the specific timezone to avoid shifting issues
+  const target = dayjs.tz(
+    targetTimeStr,
     "YYYY-MM-DD HH:mm:ss",
-  ).tz("Asia/Ho_Chi_Minh");
+    "Asia/Ho_Chi_Minh",
+  );
 
   return now.isAfter(target);
 }
