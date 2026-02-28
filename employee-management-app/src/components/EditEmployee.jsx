@@ -11,6 +11,9 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
     employee_code: employee.employee_code || "",
     full_name: employee.full_name || "",
     date_of_birth: employee.date_of_birth || "",
+    email: employee.email || "",
+    phone_number: employee.phone_number || "",
+    image: employee.image || null,
     salary: employee.salary || "",
     position: employee.position || "",
     hire_date: employee.hire_date || "",
@@ -18,10 +21,10 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value,
     }));
   };
 
@@ -31,12 +34,36 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
     setMessage({ type: "", text: "" });
 
     try {
+      let publicImageUrl = employee.image; // preserve old image unless overridden
+
+      // Upload new image if a new File was selected
+      if (formData.image && typeof formData.image !== "string") {
+        const fileExt = formData.image.name.split(".").pop();
+        const fileName = `${Date.now()}_${formData.employee_code}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("image_storage")
+          .upload(fileName, formData.image);
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: uploadData } = supabase.storage
+          .from("image_storage")
+          .getPublicUrl(fileName);
+
+        publicImageUrl = uploadData.publicUrl;
+      }
+
       const { error } = await supabase
         .from("employees")
         .update({
           employee_code: formData.employee_code,
           full_name: formData.full_name,
           date_of_birth: formData.date_of_birth,
+          email: formData.email,
+          phone_number: formData.phone_number,
+          image: publicImageUrl,
           salary: parseFloat(formData.salary),
           position: formData.position,
           hire_date: formData.hire_date,
@@ -115,6 +142,47 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
                   value={formData.date_of_birth}
                   onChange={handleChange}
                   required
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("email")}</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("phoneNumber")}</label>
+                <input
+                  type="text"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("profileImageUpload")}</label>
+                {typeof formData.image === "string" && formData.image && (
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <img
+                      src={formData.image}
+                      alt="Current profile"
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleChange}
                 />
               </div>
               <div className="form-group full-width">

@@ -61,6 +61,7 @@ const translations = {
     macExists: "Địa chỉ MAC này đã được đăng ký cho thiết bị khác.",
     insertSuccess: "Thêm nhân sự và thiết bị thành công!",
     insertError: "Đã xảy ra lỗi khi thêm dữ liệu.",
+    profileImageUpload: "Tải Lên Ảnh Đại Diện",
     active: "Đang làm việc",
     inactive: "Đã nghỉ việc",
     // WorkSchedule
@@ -155,6 +156,7 @@ const translations = {
     macExists: "This MAC address is already registered to another device.",
     insertSuccess: "Employee and device data inserted successfully!",
     insertError: "An error occurred during insertion.",
+    profileImageUpload: "Upload Profile Image",
     active: "Active",
     inactive: "Inactive",
     // WorkSchedule

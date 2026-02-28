@@ -332,6 +332,7 @@ body {
 }
 
 .form-group input[type="text"],
+.form-group input[type="email"],
 .form-group input[type="number"],
 .form-group input[type="date"],
 .form-group input[type="time"],
@@ -343,6 +344,40 @@ body {
   transition: all 0.2s;
   background-color: var(--surface);
   color: var(--text-main);
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
+  background-color: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: var(--primary);
+}
+
+.form-group input[type="file"]::file-selector-button {
+  background-color: var(--primary);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-right: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .form-group input:focus,

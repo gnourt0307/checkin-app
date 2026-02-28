@@ -11,6 +11,9 @@ export default function InsertData() {
     employee_code: "",
     full_name: "",
     date_of_birth: "",
+    email: "",
+    phone_number: "",
+    image: null,
     salary: "",
     position: "",
     hire_date: "",
@@ -21,10 +24,11 @@ export default function InsertData() {
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]:
+        type === "checkbox" ? checked : type === "file" ? files[0] : value,
     }));
   };
 
@@ -45,6 +49,26 @@ export default function InsertData() {
         throw new Error(t("macExists"));
       }
 
+      // Handle Image Upload First
+      let publicImageUrl = null;
+      if (formData.image) {
+        const fileExt = formData.image.name.split(".").pop();
+        const fileName = `${Date.now()}_${formData.employee_code}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("image_storage")
+          .upload(fileName, formData.image);
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: uploadData } = supabase.storage
+          .from("image_storage")
+          .getPublicUrl(fileName);
+
+        publicImageUrl = uploadData.publicUrl;
+      }
+
       // Insert employee
       const { data: empData, error: empError } = await supabase
         .from("employees")
@@ -53,6 +77,9 @@ export default function InsertData() {
             employee_code: formData.employee_code,
             full_name: formData.full_name,
             date_of_birth: formData.date_of_birth,
+            email: formData.email,
+            phone_number: formData.phone_number,
+            image: publicImageUrl,
             salary: parseFloat(formData.salary),
             position: formData.position,
             hire_date: formData.hire_date,
@@ -89,6 +116,9 @@ export default function InsertData() {
         employee_code: "",
         full_name: "",
         date_of_birth: "",
+        email: "",
+        phone_number: "",
+        image: null,
         salary: "",
         position: "",
         hire_date: "",
@@ -153,6 +183,33 @@ export default function InsertData() {
                   value={formData.date_of_birth}
                   onChange={handleChange}
                   required
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("email")}</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("phoneNumber")}</label>
+                <input
+                  type="text"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>{t("profileImageUpload")}</label>
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleChange}
                 />
               </div>
               <div className="form-group full-width">

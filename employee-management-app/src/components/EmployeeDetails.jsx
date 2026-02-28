@@ -146,23 +146,39 @@ export default function EmployeeDetails({ employee, onBack }) {
         <div className="card-body p-4">
           {!showAttendance ? (
             <div className="profile-section">
-              <div
-                className="profile-image-placeholder mb-4"
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  backgroundColor: "#e9ecef",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#6c757d",
-                  fontSize: "14px",
-                  margin: "0 auto",
-                }}
-              >
-                {t("profileImage")} (null)
-              </div>
+              {employee.image ? (
+                <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+                  <img
+                    src={employee.image}
+                    alt={employee.full_name}
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="profile-image-placeholder mb-4"
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    backgroundColor: "#e9ecef",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#6c757d",
+                    fontSize: "14px",
+                    margin: "0 auto",
+                  }}
+                >
+                  {t("profileImage")} (null)
+                </div>
+              )}
               <div className="table-container mb-4">
                 <table className="data-table">
                   <tbody>
@@ -180,10 +196,10 @@ export default function EmployeeDetails({ employee, onBack }) {
                       <td style={{ fontWeight: "bold" }}>{t("phoneNumber")}</td>
                       <td>{employee.phone_number || "null"}</td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <td style={{ fontWeight: "bold" }}>{t("socialMedia")}</td>
                       <td>{employee.social_media || "null"}</td>
-                    </tr>
+                    </tr> */}
                     <tr>
                       <td style={{ fontWeight: "bold" }}>{t("salary")}</td>
                       <td>
