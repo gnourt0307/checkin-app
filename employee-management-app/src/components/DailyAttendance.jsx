@@ -6,7 +6,13 @@ export default function DailyAttendance() {
   const { t } = useLanguage();
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().split("T")[0];
+    const vnDate = new Date(
+      today.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }),
+    );
+    const y = vnDate.getFullYear();
+    const m = String(vnDate.getMonth() + 1).padStart(2, "0");
+    const d = String(vnDate.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   });
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,6 +20,29 @@ export default function DailyAttendance() {
   useEffect(() => {
     if (selectedDate) {
       fetchDailyAttendance();
+
+      // Subscribe to real-time changes
+      const attendanceSubscription = supabase
+        .channel("custom-all-channel")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "attendance",
+            filter: `work_date=eq.${selectedDate}`,
+          },
+          (payload) => {
+            console.log("Realtime Update received!", payload);
+            fetchDailyAttendance();
+          },
+        )
+        .subscribe();
+
+      // Cleanup subscription on unmount or date change
+      return () => {
+        supabase.removeChannel(attendanceSubscription);
+      };
     }
   }, [selectedDate]);
 
@@ -50,7 +79,8 @@ export default function DailyAttendance() {
     } catch (error) {
       console.error("Error fetching daily attendance:", error);
     } finally {
-      setLoading(false);
+      // Small timeout to prevent UI flashing if fetching is very fast
+      setTimeout(() => setLoading(false), 300);
     }
   };
 

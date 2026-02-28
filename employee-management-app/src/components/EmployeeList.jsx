@@ -95,7 +95,6 @@ export default function EmployeeList() {
                 <th>{t("code")}</th>
                 <th>{t("name")}</th>
                 <th>{t("position")}</th>
-                <th>{t("salary")}</th>
                 <th>{t("status")}</th>
                 <th>{t("actions")}</th>
               </tr>
@@ -103,7 +102,7 @@ export default function EmployeeList() {
             <tbody>
               {employees.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center">
+                  <td colSpan="5" className="text-center">
                     {t("noEmployees")}
                   </td>
                 </tr>
@@ -117,7 +116,6 @@ export default function EmployeeList() {
                     <td>{emp.employee_code}</td>
                     <td>{emp.full_name}</td>
                     <td>{emp.position}</td>
-                    <td>{emp.salary?.toLocaleString("vi-VN")}</td>
                     <td>
                       <span
                         className={`status-badge ${emp.status === "active" ? "status-active" : "status-inactive"}`}
