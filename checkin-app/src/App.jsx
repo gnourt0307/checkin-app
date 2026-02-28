@@ -70,32 +70,35 @@ function App() {
       const { employeeData, workSchedule, attendanceStatus } = result;
       setName(employeeData.employee.full_name);
 
-      //Button clickable at 7AM
-      compareWithNow("07:00:00") === "before"
-        ? setIsClickable(false)
-        : setIsClickable(true);
+      let clickable = false;
 
       //check if status has already been checked in
       if (
         attendanceStatus === null &&
         compareWithNow(workSchedule.work_end_time) === "after"
       ) {
-        setIsClickable(false);
+        clickable = false;
       } else if (attendanceStatus === null) {
-        setIsClickable(true);
+        clickable = true;
       } else if (attendanceStatus.status) {
         if (!attendanceStatus.check_out_time) {
           const checkOutStatus = compareWithNow(workSchedule.work_end_time);
           if (checkOutStatus === "after") {
-            setIsClickable(true);
+            clickable = true;
           } else {
-            setIsClickable(false);
+            clickable = false;
           }
         } else {
-          setIsClickable(false);
+          clickable = false;
         }
         setCheckInStatus(attendanceStatus.status);
       }
+
+      //Button clickable at 7AM
+      if (compareWithNow("07:00:00") === "before") {
+        clickable = false;
+      }
+      setIsClickable(clickable);
     } catch (error) {
       console.error("Check-in error:", error);
     }
