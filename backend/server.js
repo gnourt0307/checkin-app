@@ -9,17 +9,18 @@ const insertStatus = require("./utils/insertStatus");
 const isWeekend = require("./utils/isWeekend");
 const getAttendanceStatus = require("./utils/getAttendanceStatus");
 const updateStatus = require("./utils/updateStatus");
+const addMinutesToTime = require("./utils/addMinutesToTime");
 
 app.use(express.json());
 app.set("trust proxy", true);
 
 //xử lí check in
 app.post("/checkin", async (req, res) => {
-  const companyIp = process.env.COMPANY_IP;
+  const companyIp = process.env.COMPANY_IP.split(",");
   const { mac } = req.body;
   const userIp = req.ip;
 
-  if (userIp !== "::1") {
+  if (!companyIp.includes(userIp)) {
     return res.status(400).json({ message: "Invalid IP address" });
   }
 
@@ -36,8 +37,12 @@ app.post("/checkin", async (req, res) => {
     return res.status(404).json({ message: "Work schedule not found" });
   }
 
+  console.log(userIp, mac, employeeData, workSchedule);
+
   const workStartTime = workSchedule.work_start_time;
-  const isLate = isCheckInLate(workStartTime);
+  const lateMinutes = workSchedule.late_threshold_minutes;
+  const finalWorkTime = addMinutesToTime(workStartTime, lateMinutes);
+  const isLate = isCheckInLate(finalWorkTime);
   const todayDate = getTodayDate();
   insertStatus(employeeData, todayDate, isLate);
 
@@ -49,11 +54,11 @@ app.post("/checkin", async (req, res) => {
 
 //xử lí check out
 app.post("/checkout", async (req, res) => {
-  const companyIp = process.env.COMPANY_IP;
+  const companyIp = process.env.COMPANY_IP.split(",");
   const userIp = req.ip;
   const { mac } = req.body;
 
-  if (userIp !== "::1") {
+  if (!companyIp.includes(userIp)) {
     return res.status(400).json({ message: "Invalid IP address" });
   }
 
@@ -61,6 +66,8 @@ app.post("/checkout", async (req, res) => {
   if (!employeeData) {
     return res.status(404).json({ message: "Employee not found" });
   }
+
+  console.log(userIp, mac, employeeData, workSchedule);
 
   const todayDate = getTodayDate();
   updateStatus(employeeData, todayDate);
@@ -70,8 +77,13 @@ app.post("/checkout", async (req, res) => {
 
 //lấy thông tin nhân viên và trạng thái check in/out
 app.post("/get-info", async (req, res) => {
+  const companyIp = process.env.COMPANY_IP.split(",");
   const { mac } = req.body;
-  console.log(mac);
+  const userIp = req.ip;
+
+  if (!companyIp.includes(userIp)) {
+    return res.status(400).json({ message: "Invalid IP address" });
+  }
 
   if (!mac) {
     return res.status(400).json({ message: "MAC address not found" });
@@ -89,9 +101,7 @@ app.post("/get-info", async (req, res) => {
   const todayDate = getTodayDate();
   const attendanceStatus = await getAttendanceStatus(employeeData, todayDate);
 
-  if (!attendanceStatus) {
-    return res.status(404).json({ message: "Attendance status not found" });
-  }
+  console.log(userIp, mac, employeeData, workSchedule, attendanceStatus);
 
   res.json({
     employeeData,
@@ -100,6 +110,6 @@ app.post("/get-info", async (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });
