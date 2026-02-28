@@ -67,7 +67,7 @@ app.post("/checkout", async (req, res) => {
     return res.status(404).json({ message: "Employee not found" });
   }
 
-  console.log(userIp, mac, employeeData, workSchedule);
+  console.log(userIp, mac, employeeData);
 
   const todayDate = getTodayDate();
   updateStatus(employeeData, todayDate);
