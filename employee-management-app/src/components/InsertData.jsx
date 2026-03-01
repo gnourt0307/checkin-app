@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useLanguage } from "../utils/LanguageContext";
+import { formatMacAddress } from "../utils/formatMacAddress";
 
 export default function InsertData() {
   const { t } = useLanguage();
@@ -38,11 +39,13 @@ export default function InsertData() {
     setMessage({ type: "", text: "" });
 
     try {
+      const formattedMac = formatMacAddress(formData.mac_address);
+
       // Check if MAC address already exists
       const { data: existingDevice } = await supabase
         .from("devices")
         .select("id")
-        .eq("mac_address", formData.mac_address)
+        .eq("mac_address", formattedMac)
         .single();
 
       if (existingDevice) {
@@ -96,7 +99,7 @@ export default function InsertData() {
         {
           employee_id: empData.id,
           device_name: formData.device_name,
-          mac_address: formData.mac_address.toLowerCase(),
+          mac_address: formattedMac,
           is_active: formData.is_active,
         },
       ]);
@@ -273,7 +276,7 @@ export default function InsertData() {
                   name="mac_address"
                   value={formData.mac_address}
                   onChange={handleChange}
-                  placeholder="00-00-00-00-00-00"
+                  placeholder="00:00:00:00:00:00"
                   required
                 />
               </div>

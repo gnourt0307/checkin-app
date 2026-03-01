@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useLanguage } from "../utils/LanguageContext";
+import { formatMacAddress } from "../utils/formatMacAddress";
 
 export default function EditEmployee({ employee, onBack, onSuccess }) {
   const { t } = useLanguage();
@@ -18,7 +19,33 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
     position: employee.position || "",
     hire_date: employee.hire_date || "",
     status: employee.status || "active",
+    mac_address: "",
+    device_id: null,
   });
+
+  useEffect(() => {
+    const fetchDevice = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("devices")
+          .select("id, mac_address")
+          .eq("employee_id", employee.id);
+
+        if (data && data.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            mac_address: data[0].mac_address || "",
+            device_id: data[0].id,
+          }));
+        }
+      } catch (err) {
+        console.error("Error fetching device info:", err);
+      }
+    };
+    if (employee?.id) {
+      fetchDevice();
+    }
+  }, [employee]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -34,6 +61,7 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
     setMessage({ type: "", text: "" });
 
     try {
+      const formattedMac = formatMacAddress(formData.mac_address);
       let publicImageUrl = employee.image; // preserve old image unless overridden
 
       // Upload new image if a new File was selected
@@ -72,6 +100,24 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
         .eq("id", employee.id);
 
       if (error) throw error;
+
+      if (formData.device_id) {
+        const { error: devError } = await supabase
+          .from("devices")
+          .update({ mac_address: formattedMac })
+          .eq("id", formData.device_id);
+        if (devError) throw devError;
+      } else if (formData.mac_address) {
+        const { error: devError } = await supabase.from("devices").insert([
+          {
+            employee_id: employee.id,
+            device_name: "Web Device",
+            mac_address: formattedMac,
+            is_active: formData.status === "active",
+          },
+        ]);
+        if (devError) throw devError;
+      }
 
       setMessage({
         type: "success",
@@ -225,6 +271,16 @@ export default function EditEmployee({ employee, onBack, onSuccess }) {
                   <option value="active">{t("active")}</option>
                   <option value="inactive">{t("inactive")}</option>
                 </select>
+              </div>
+              <div className="form-group full-width">
+                <label>{t("macAddress")}</label>
+                <input
+                  type="text"
+                  name="mac_address"
+                  value={formData.mac_address}
+                  onChange={handleChange}
+                  placeholder="00:00:00:00:00:00"
+                />
               </div>
             </div>
 
